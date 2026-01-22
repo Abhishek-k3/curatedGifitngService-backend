@@ -1,3 +1,5 @@
+console.log('ALL ENV KEYS:', Object.keys(process.env));
+
 import express from 'express';
 import cors from 'cors';
 import { google } from 'googleapis';
