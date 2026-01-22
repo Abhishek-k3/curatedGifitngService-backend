@@ -1,29 +1,47 @@
 import express from 'express';
-import nodemailer from 'nodemailer';
 import cors from 'cors';
+import { google } from 'googleapis';
 
 const app = express();
 
-// ✅ Explicit CORS config
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type']
 }));
-
-// ✅ Explicitly handle preflight
-app.use((req, res, next) => {
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(204);
-  } else {
-    next();
-  }
-});
-
-
 app.use(express.json());
 
-app.get('/', (req, res) => {
+const oAuth2Client = new google.auth.OAuth2(
+  process.env.GMAIL_CLIENT_ID,
+  process.env.GMAIL_CLIENT_SECRET,
+  'https://developers.google.com/oauthplayground'
+);
+
+oAuth2Client.setCredentials({
+  refresh_token: process.env.GMAIL_REFRESH_TOKEN
+});
+
+const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
+
+async function sendMail({ to, subject, text }) {
+  const rawMessage = Buffer.from(
+    `From: ${process.env.GMAIL_SENDER}\r\n` +
+    `To: ${to}\r\n` +
+    `Subject: ${subject}\r\n\r\n` +
+    text
+  )
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+
+  await gmail.users.messages.send({
+    userId: 'me',
+    requestBody: { raw: rawMessage }
+  });
+}
+
+app.get('/', (_, res) => {
   res.send('Backend is running');
 });
 
@@ -31,27 +49,16 @@ app.post('/send-enquiry', async (req, res) => {
   const { name, phone, email, occasion, budget, message } = req.body;
 
   try {
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true, // REQUIRED for port 465
-        auth: {
-            user: process.env.MAIL_USER,
-            pass: process.env.MAIL_PASS
-        }
-    });
-
-    await transporter.sendMail({
-      from: process.env.MAIL_USER,
-      to: process.env.MAIL_USER,
+    await sendMail({
+      to: process.env.GMAIL_SENDER,
       subject: `New Enquiry from ${name}`,
-      html: `
-        <p><b>Name:</b> ${name}</p>
-        <p><b>Phone:</b> ${phone}</p>
-        <p><b>Email:</b> ${email}</p>
-        <p><b>Occasion:</b> ${occasion}</p>
-        <p><b>Budget:</b> ${budget}</p>
-        <p><b>Message:</b> ${message}</p>
+      text: `
+Name: ${name}
+Phone: ${phone}
+Email: ${email}
+Occasion: ${occasion}
+Budget: ${budget}
+Message: ${message}
       `
     });
 
