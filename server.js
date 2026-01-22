@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 import cors from 'cors';
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
@@ -37,11 +38,13 @@ app.post('/send-enquiry', async (req, res) => {
     });
 
     res.status(200).json({ success: true });
-  } catch (error) {
+  } catch (err) {
     res.status(500).json({ success: false });
   }
 });
 
-app.listen(3001, () => {
-  console.log('Server running on port 3001');
+// 🔴 THIS IS THE IMPORTANT LINE
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
