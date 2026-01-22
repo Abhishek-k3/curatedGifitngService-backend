@@ -1,44 +1,10 @@
+import 'dotenv/config'; // 👈 loads .env locally
+
 import express from 'express';
 import cors from 'cors';
 import { google } from 'googleapis';
 
 const app = express();
-
-/**
- * ================================
- * CONFIG TOGGLE (TEMPORARY)
- * ================================
- * true  → use values from this file (TESTING ONLY)
- * false → use Railway environment variables (PRODUCTION)
- */
-const USE_REPO_ENV = true;
-
-/**
- * ================================
- * CONFIG SOURCE
- * ================================
- */
-const config = USE_REPO_ENV
-  ? {
-      clientId: "922023383895-kfpnh3ebuft9ub243l7osmnm9miremaq.apps.googleusercontent.com",
-      clientSecret: "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",
-      refreshToken: "1//04EvaILdtx_wDCgYIARAAGAQSNwF-L9IrikIJjKcW25EjYuaSzm5yD81k8WznYsd3j2Fbx-2uxQUubFmjsf6x1-6sJ0jOSOwPcJ8",
-      sender: 'abhisheku3u@gmail.com'
-    }
-  : {
-      clientId: process.env.GMAIL_CLIENT_ID,
-      clientSecret: process.env.GMAIL_CLIENT_SECRET,
-      refreshToken: process.env.GMAIL_REFRESH_TOKEN,
-      sender: process.env.GMAIL_SENDER
-    };
-
-// 🔍 Debug (remove later)
-console.log({
-  hasClientId: !!config.clientId,
-  hasClientSecret: !!config.clientSecret,
-  hasRefreshToken: !!config.refreshToken,
-  usingRepoEnv: USE_REPO_ENV
-});
 
 /**
  * ================================
@@ -55,24 +21,44 @@ app.use(express.json());
 
 /**
  * ================================
+ * CONFIG (ENV ONLY)
+ * ================================
+ */
+const {
+  GMAIL_CLIENT_ID,
+  GMAIL_CLIENT_SECRET,
+  GMAIL_REFRESH_TOKEN,
+  GMAIL_SENDER
+} = process.env;
+
+// 🔍 Debug (remove later if you want)
+console.log({
+  hasClientId: !!GMAIL_CLIENT_ID,
+  hasClientSecret: !!GMAIL_CLIENT_SECRET,
+  hasRefreshToken: !!GMAIL_REFRESH_TOKEN,
+  hasSender: !!GMAIL_SENDER
+});
+
+/**
+ * ================================
  * GMAIL AUTH
  * ================================
  */
 const oAuth2Client = new google.auth.OAuth2(
-  config.clientId,
-  config.clientSecret,
+  GMAIL_CLIENT_ID,
+  GMAIL_CLIENT_SECRET,
   'https://developers.google.com/oauthplayground'
 );
 
 oAuth2Client.setCredentials({
-  refresh_token: config.refreshToken
+  refresh_token: GMAIL_REFRESH_TOKEN
 });
 
 const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 
 async function sendMail({ to, subject, text }) {
   const rawMessage = Buffer.from(
-    `From: ${config.sender}\r\n` +
+    `From: ${GMAIL_SENDER}\r\n` +
     `To: ${to}\r\n` +
     `Subject: ${subject}\r\n\r\n` +
     text
@@ -102,7 +88,7 @@ app.post('/send-enquiry', async (req, res) => {
 
   try {
     await sendMail({
-      to: config.sender,
+      to: GMAIL_SENDER,
       subject: `New Enquiry from ${name}`,
       text: `
 Name: ${name}
