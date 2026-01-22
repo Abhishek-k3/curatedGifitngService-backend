@@ -4,7 +4,16 @@ import cors from 'cors';
 
 const app = express();
 
-app.use(cors());
+// ✅ Explicit CORS config
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type']
+}));
+
+// ✅ Explicitly handle preflight
+app.options('*', cors());
+
 app.use(express.json());
 
 app.get('/', (req, res) => {
@@ -39,11 +48,11 @@ app.post('/send-enquiry', async (req, res) => {
 
     res.status(200).json({ success: true });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ success: false });
   }
 });
 
-// 🔴 THIS IS THE IMPORTANT LINE
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
