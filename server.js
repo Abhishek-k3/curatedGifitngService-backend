@@ -17,6 +17,12 @@ const oAuth2Client = new google.auth.OAuth2(
   'https://developers.google.com/oauthplayground'
 );
 
+console.log('Has refresh token:', !!process.env.GMAIL_REFRESH_TOKEN);
+console.log({
+  hasClientId: !!process.env.GMAIL_CLIENT_ID,
+  hasClientSecret: !!process.env.GMAIL_CLIENT_SECRET,
+  hasRefreshToken: !!process.env.GMAIL_REFRESH_TOKEN
+});
 oAuth2Client.setCredentials({
   refresh_token: process.env.GMAIL_REFRESH_TOKEN
 });
