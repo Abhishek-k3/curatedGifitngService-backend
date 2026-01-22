@@ -72,15 +72,17 @@ const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 
 async function sendMail({ to, subject, text }) {
   const rawMessage = Buffer.from(
-    `From: ${config.sender}\r\n` +
-    `To: ${to}\r\n` +
-    `Subject: ${subject}\r\n\r\n` +
-    text
-  )
-    .toString('base64')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
+  `From: ${config.sender}\r\n` +
+  `To: ${to}\r\n` +
+  `Subject: ${subject}\r\n` +
+  `MIME-Version: 1.0\r\n` +
+  `Content-Type: text/html; charset=UTF-8\r\n\r\n` +
+  text
+)
+  .toString('base64')
+  .replace(/\+/g, '-')
+  .replace(/\//g, '_')
+  .replace(/=+$/, '');
 
   await gmail.users.messages.send({
     userId: 'me',
