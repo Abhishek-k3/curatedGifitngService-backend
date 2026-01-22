@@ -20,9 +20,9 @@ const USE_REPO_ENV = true;
  */
 const config = USE_REPO_ENV
   ? {
-      clientId: 'PASTE_CLIENT_ID_HERE',
-      clientSecret: 'PASTE_CLIENT_SECRET_HERE',
-      refreshToken: 'PASTE_REFRESH_TOKEN_HERE',
+      clientId: "922023383895-kfpnh3ebuft9ub243l7osmnm9miremaq.apps.googleusercontent.com",
+      clientSecret: "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",
+      refreshToken: "1//04EvaILdtx_wDCgYIARAAGAQSNwF-L9IrikIJjKcW25EjYuaSzm5yD81k8WznYsd3j2Fbx-2uxQUubFmjsf6x1-6sJ0jOSOwPcJ8",
       sender: 'abhisheku3u@gmail.com'
     }
   : {
