@@ -104,14 +104,89 @@ app.post('/send-enquiry', async (req, res) => {
     await sendMail({
       to: config.sender,
       subject: `New Enquiry from ${name}`,
-      text: `
-Name: ${name}
-Phone: ${phone}
-Email: ${email}
-Occasion: ${occasion}
-Budget: ${budget}
-Message: ${message}
-      `
+      text: `<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>New Enquiry</title>
+  </head>
+  <body style="margin:0; padding:0; background-color:#f4f4f4; font-family:Arial, sans-serif;">
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="padding:20px;">
+      <tr>
+        <td align="center">
+
+          <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:8px; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+
+            <!-- Header -->
+            <tr>
+              <td style="background:#2c3e50; padding:20px; color:#ffffff;">
+                <h2 style="margin:0; font-size:20px;">📩 New Enquiry Received</h2>
+              </td>
+            </tr>
+
+            <!-- Body -->
+            <tr>
+              <td style="padding:24px; color:#333333;">
+                <p style="font-size:14px; margin-bottom:20px;">
+                  Hi Admin,<br /><br />
+                  You have received a new enquiry. The details are below:
+                </p>
+
+                <table width="100%" cellpadding="8" cellspacing="0" style="border-collapse:collapse; font-size:14px;">
+                  <tr>
+                    <td style="background:#f8f8f8; font-weight:bold; width:30%;">Name</td>
+                    <td>${name}</td>
+                  </tr>
+                  <tr>
+                    <td style="background:#f8f8f8; font-weight:bold;">Phone</td>
+                    <td>${phone}</td>
+                  </tr>
+                  <tr>
+                    <td style="background:#f8f8f8; font-weight:bold;">Email</td>
+                    <td>${email}</td>
+                  </tr>
+                  <tr>
+                    <td style="background:#f8f8f8; font-weight:bold;">Occasion</td>
+                    <td>${occasion}</td>
+                  </tr>
+                  <tr>
+                    <td style="background:#f8f8f8; font-weight:bold;">Budget</td>
+                    <td>${budget}</td>
+                  </tr>
+                  <tr>
+                    <td style="background:#f8f8f8; font-weight:bold;">Message</td>
+                    <td>${message}</td>
+                  </tr>
+                </table>
+
+                <p style="margin-top:24px; font-size:14px;">
+                  Please follow up with the customer at the earliest.
+                </p>
+
+                <p style="font-size:14px; margin-top:30px;">
+                  Regards,<br />
+                  <strong>Curated Gifting Service</strong>
+                </p>
+              </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+              <td style="background:#f0f0f0; padding:12px; text-align:center; font-size:12px; color:#777;">
+                This enquiry was submitted via your website.
+              </td>
+            </tr>
+
+          </table>
+
+        </td>
+      </tr>
+    </table>
+
+  </body>
+</html>
+`
     });
 
     res.status(200).json({ success: true });
