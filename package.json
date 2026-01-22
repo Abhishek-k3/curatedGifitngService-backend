@@ -9,10 +9,7 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {git add package.json
-git commit -m "Fix package.json for Render deployment"
-git push
-
+  "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "nodemailer": "^6.9.8"
